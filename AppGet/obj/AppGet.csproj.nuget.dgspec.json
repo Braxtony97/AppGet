@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Unity\\Test\\s\\AppGet\\AppGet\\AppGet.csproj": {}
+    "C:\\Users\\Renat\\Documents\\AppGet\\AppGet\\AppGet.csproj": {}
   },
   "projects": {
-    "D:\\Unity\\Test\\s\\AppGet\\AppGet\\AppGet.csproj": {
+    "C:\\Users\\Renat\\Documents\\AppGet\\AppGet\\AppGet.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Unity\\Test\\s\\AppGet\\AppGet\\AppGet.csproj",
+        "projectUniqueName": "C:\\Users\\Renat\\Documents\\AppGet\\AppGet\\AppGet.csproj",
         "projectName": "AppGet",
-        "projectPath": "D:\\Unity\\Test\\s\\AppGet\\AppGet\\AppGet.csproj",
+        "projectPath": "C:\\Users\\Renat\\Documents\\AppGet\\AppGet\\AppGet.csproj",
         "packagesPath": "C:\\Users\\Renat\\.nuget\\packages\\",
-        "outputPath": "D:\\Unity\\Test\\s\\AppGet\\AppGet\\obj\\",
+        "outputPath": "C:\\Users\\Renat\\Documents\\AppGet\\AppGet\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -49,6 +49,12 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
+          "dependencies": {
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.4, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",

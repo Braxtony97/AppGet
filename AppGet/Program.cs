@@ -6,19 +6,100 @@ namespace AppGet
     {
         static async Task Main(string[] args)
         {
+            // need write path to IPs.txt file
             string filePath = @"C:\Users\Renat\Documents\AppGet\AppGet\IPs.txt";
             List<string> ipList = new List<string>();
+            Dictionary<string, IpData> countryDictionary = new Dictionary<string, IpData>();
 
             GetIPsFromFile(filePath, ipList);
 
-            await GetIpInfoAsync(ipList[0]);
+            List<Task<IpData>> tasks = new List<Task<IpData>>();
+            foreach (string ip in ipList)
+            {
+                tasks.Add(GetIpInfoAsync(ip));
+            }
+
+            IpData[] results = await Task.WhenAll(tasks);
+
+            Dictionary<string, List<IpData>> groupedByCountry =
+            GroupByCountry(results);
+
+            foreach (var pair in groupedByCountry)
+            {
+                Console.WriteLine($"{pair.Key}: {pair.Value.Count}");
+            }
+
+            string countryWithMostCities = null;
+            int maxCityCount = 0;
+            HashSet<string> citiesOfTopCountry = null;
+
+            foreach (var countryGroup in groupedByCountry)
+            {
+                HashSet<string> uniqueCities = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                foreach (IpData ip in countryGroup.Value)
+                {
+                    if (!string.IsNullOrEmpty(ip.City))
+                    {
+                        uniqueCities.Add(ip.City);
+                    }
+                }
+
+                int cityCount = uniqueCities.Count;
+
+                if (cityCount > maxCityCount)
+                {
+                    maxCityCount = cityCount;
+                    countryWithMostCities = countryGroup.Key;
+                    citiesOfTopCountry = uniqueCities;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(countryWithMostCities) && citiesOfTopCountry != null)
+            {
+                Console.WriteLine($"\n{countryWithMostCities}:");
+
+                List<string> sortedCities = new List<string>(citiesOfTopCountry);
+                sortedCities.Sort(StringComparer.OrdinalIgnoreCase);
+
+                foreach (string city in sortedCities)
+                {
+                    Console.WriteLine($"- {city}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Unable to find data about cities.");
+            }
+        }
+
+        private static Dictionary<string, List<IpData>> GroupByCountry(IpData[] results)
+        {
+            Dictionary<string, List<IpData>> grouped =
+                new Dictionary<string, List<IpData>>();
+
+            foreach (IpData ipData in results)
+            {
+                if (ipData == null)
+                    continue;
+
+                if (string.IsNullOrEmpty(ipData.Country))
+                    continue;
+
+                if (!grouped.ContainsKey(ipData.Country))
+                {
+                    grouped[ipData.Country] = new List<IpData>();
+                }
+
+                grouped[ipData.Country].Add(ipData);
+            }
+
+            return grouped;
         }
 
         public static async Task<IpData> GetIpInfoAsync(string ip)
         {
             using HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0");
-            client.Timeout = TimeSpan.FromSeconds(10);
 
             string url = $"https://ipinfo.io/{ip}/json";
 
